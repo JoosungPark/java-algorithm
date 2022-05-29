@@ -30,7 +30,7 @@ public class Parity {
     public void testBruteForceParity() {
         long target = 0x0101001;
         System.out.printf("target %2x%n", target);
-        short result = dropTheLowestSetBit(target);
+        short result = parity(target);
         int odd = result % 2;
         System.out.printf("result is %s%n", odd == 0 ? "odd" : "not odd");
         Assert.assertEquals(odd, odd == 0 ? 0 : 1);
@@ -64,5 +64,16 @@ public class Parity {
             System.out.printf("after operate : %02x%n", x);
         }
         return result;
+    }
+
+    static int[] precomputedParity = new int[65536]; // 2 ^ 16
+
+    public static short parity(long x) {
+        final int MASK_SIZE = 16;
+        final int BIT_MASK = 0xFFFF;
+        return (short) (precomputedParity[(int) ((x >>> (3 * MASK_SIZE)) & BIT_MASK)] ^
+                        precomputedParity[(int) ((x >>> (2 * MASK_SIZE)) & BIT_MASK)] ^
+                        precomputedParity[(int) ((x >>> (MASK_SIZE)) & BIT_MASK)] ^
+                        precomputedParity[(int) (x & BIT_MASK)]);
     }
 }
